@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "com.rooxchicken.toggleablepiechart.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+		"DebugPieChart"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
