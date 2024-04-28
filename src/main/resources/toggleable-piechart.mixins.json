@@ -3,7 +3,9 @@
 	"package": "com.rooxchicken.toggleablepiechart.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"DebugPieChart"
+		"DebugPieChart",
+		"WindowModification",
+		"DebugHudMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
