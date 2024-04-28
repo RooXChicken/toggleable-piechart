@@ -15,46 +15,28 @@ public class DebugPieChart
 {
 	@Inject(method = "drawProfilerResults(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/util/profiler/ProfileResult;)V", at = @At("HEAD"))
 	private void drawProfilerResultsHead(CallbackInfo info) {
-		ToggleablePieChart.UpdateValues();
 		ToggleablePieChart.renderingPieChart = true;
 		ToggleablePieChart.windowIndex = 0;
     }
-	
+
 	@Inject(method = "drawProfilerResults(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/util/profiler/ProfileResult;)V", at = @At("TAIL"))
 	private void drawProfilerResultsTail(CallbackInfo info) {
 		ToggleablePieChart.renderingPieChart = false;
     }
-	
-	@Inject(method = "handleProfilerKeyPress(I)V", at = @At("HEAD"), cancellable = true)
-	private void handleProfilerKeyPress(int digit, CallbackInfo info)
-	{
-		if(!MinecraftClient.getInstance().getDebugHud().shouldShowDebugHud())
-			info.cancel();
-	}
-	
-//	@Inject(method = "stop()V", at = @At("HEAD"), cancellable = true)
-//	private void stop(CallbackInfo info)
-//	{
-//		if(ToggleablePieChart.renderPieChart)
-//		{
-//			ToggleablePieChart.renderPieChart = false;
-//			info.cancel();
-//		}
-//	}
 //	@Inject(method = "stop()V", at = @At("HEAD"))
 //	private void stop(CallbackInfo info)
 //	{
 //		ToggleablePieChart.LOGGER.info("Disabling the PieChart");
 //		ToggleablePieChart.renderPieChart = false;
 //	}
-	
-//	@Inject(method = "shouldMonitorTickDuration()Z", at = @At("HEAD"), cancellable = true)
-//	private void shouldMonitorTickDuration(CallbackInfoReturnable<Boolean> info) {
-//		MinecraftClient client = MinecraftClient.getInstance();
-//		
-//		if(client != null)
-//			info.setReturnValue(ToggleablePieChart.renderPieChart && !client.options.hudHidden);
-//		else
-//			info.setReturnValue(false);
-//    }
+
+	@Inject(method = "shouldMonitorTickDuration()Z", at = @At("HEAD"), cancellable = true)
+	private void shouldMonitorTickDuration(CallbackInfoReturnable<Boolean> info) {
+		MinecraftClient client = MinecraftClient.getInstance();
+
+		if(client != null)
+			info.setReturnValue(ToggleablePieChart.renderPieChart && !client.options.hudHidden);
+		else
+			info.setReturnValue(false);
+    }
 }

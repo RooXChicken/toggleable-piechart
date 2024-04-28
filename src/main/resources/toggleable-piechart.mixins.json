@@ -4,8 +4,7 @@
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
 		"DebugPieChart",
-		"WindowModification",
-		"DebugHudMixin"
+		"WindowModification"
 	],
 	"injectors": {
 		"defaultRequire": 1
