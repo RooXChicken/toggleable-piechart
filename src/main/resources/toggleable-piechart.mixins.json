@@ -1,11 +1,12 @@
 {
 	"required": true,
-	"package": "com.rooxchicken.toggleablepiechart.mixin",
+	"package": "org.loveroo.toggleablepiechart.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"DebugPieChart",
-		"WindowModification",
-		"DebugHudMixin"
+		"ShowPiechartMixin",
+		"PieChartAccessor",
+		"PieChartCountAccessor",
+		"PieChartDisableSelectMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

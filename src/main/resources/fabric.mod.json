@@ -1,32 +1,33 @@
 {
 	"schemaVersion": 1,
 	"id": "toggleable-piechart",
-	"version": "1.2.1",
-	"name": "Toggleable PieChart",
-	"description": "Allows you to toggle the PieChart without the F3 menu being open",
+	"version": "${version}",
+	"name": "toggleable-piechart",
+	"description": "Allows the toggling and free manipulation of the Debug PieChart",
 	"authors": [
 		"RooXChicken"
 	],
 	"contact": {
-		"homepage": "https://rooxchicken.com/"
+		"homepage": "https://loveroo.org",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/toggleable-piechart/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.rooxchicken.toggleablepiechart.ToggleablePieChart"
+			"org.loveroo.toggleablepiechart.Toggleablepiechart"
 		],
 		"client": [
-			"com.rooxchicken.toggleablepiechart.client.ToggleablePieChartClient"
+			"org.loveroo.toggleablepiechart.ToggleablepiechartClient"
 		]
 	},
 	"mixins": [
 		"toggleable-piechart.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.15.11",
-		"minecraft": ">=1.21",
+		"fabricloader": ">=0.16.12",
+		"minecraft": ">=1.21.4",
 		"java": ">=21",
 		"fabric-api": "*"
 	}
