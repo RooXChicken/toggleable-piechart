@@ -39,8 +39,7 @@ public class ConfigurePieChart extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double _mouseX, double _mouseY, int _button)
-    {
+    public boolean mouseClicked(double _mouseX, double _mouseY, int _button) {
         if(_button == 0)
             positioning = true;
         else if(_button == 1)
@@ -50,8 +49,7 @@ public class ConfigurePieChart extends Screen {
     }
 
     @Override
-    public boolean mouseReleased(double _mouseX, double _mouseY, int _button)
-    {
+    public boolean mouseReleased(double _mouseX, double _mouseY, int _button) {
         if(_button == 0)
             positioning = false;
         else if(_button == 1)
