@@ -16,10 +16,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"org.loveroo.toggleablepiechart.Toggleablepiechart"
+			"org.loveroo.toggleablepiechart.PieChart"
 		],
 		"client": [
-			"org.loveroo.toggleablepiechart.ToggleablepiechartClient"
+          "org.loveroo.toggleablepiechart.client.PieChartClient"
 		]
 	},
 	"mixins": [

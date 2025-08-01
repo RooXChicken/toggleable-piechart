@@ -2,8 +2,9 @@ package org.loveroo.toggleablepiechart.event;
 
 import java.util.HashMap;
 
-import org.loveroo.toggleablepiechart.Toggleablepiechart;
-import org.loveroo.toggleablepiechart.ToggleablepiechartClient;
+import net.minecraft.client.render.RenderLayer;
+import org.loveroo.toggleablepiechart.PieChart;
+import org.loveroo.toggleablepiechart.client.PieChartClient;
 import org.loveroo.toggleablepiechart.mixin.PieChartAccessor;
 import org.loveroo.toggleablepiechart.mixin.PieChartCountAccessor;
 import org.loveroo.toggleablepiechart.screen.ConfigurePieChart;
@@ -12,122 +13,164 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 import net.fabricmc.fabric.api.client.rendering.v1.LayeredDrawerWrapper;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.debug.PieChart;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.ProfileResult;
 
 public class DrawPieChart implements HudLayerRegistrationCallback {
-    private static HashMap<String, Integer> pathIndexRememberence; // used to store where the player last left off at a certain path
-    private static int index = 1;
 
+    private static final Identifier cursorTexture = Identifier.of(PieChart.MOD_ID, "textures/gui/cursor.png");
+
+    // used to store where the player last left off at a certain path
+    private static final HashMap<String, Integer> pathIndexRemembrance = new HashMap<>();
     private static boolean isMoving = false;
+
+    private static int index = 0;
+
+    private final int xOffset = 5;
+    private final int yOffset = 0;
+    private final int caretStart = 6;
 
     @Override
     public void register(LayeredDrawerWrapper layeredDrawer) {
-        pathIndexRememberence = new HashMap<String, Integer>();
-
-        layeredDrawer.attachLayerAfter(IdentifiedLayer.MISC_OVERLAYS, Identifier.of(Toggleablepiechart.MOD_ID, "draw_piechart"), 
-            (_context, _tickCounter) -> {
-                render(_context, _tickCounter, false);
+        layeredDrawer.attachLayerAfter(IdentifiedLayer.MISC_OVERLAYS, Identifier.of(PieChart.MOD_ID, "draw_piechart"),
+            (context, tickCounter) -> {
+                render(context, tickCounter, false);
             }
         );
     }
 
-    public void render(DrawContext _context, RenderTickCounter _tickCounter, boolean _fromScreen) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        TextRenderer textRenderer = client.textRenderer;
-
-        if(client.currentScreen instanceof ConfigurePieChart && !_fromScreen) {
-            return;
-        }
-
-        if(ToggleablepiechartClient.piechartToggled) {
-            PieChart _chart = ((PieChartAccessor)client.getDebugHud()).getPieChart();
-
-            int _scale = (int)client.getWindow().getScaleFactor();
-            int _width = client.getWindow().getWidth()/_scale;
-            int _height = client.getWindow().getHeight()/_scale;
-
-            int _count = getPathCount()-1;
-
-            // scale piechart
-            MatrixStack _stack = _context.getMatrices();
-            _stack.push();
-            _stack.translate(ToggleablepiechartClient.posX, ToggleablepiechartClient.posY, 0);
-            _stack.scale(ToggleablepiechartClient.scale, ToggleablepiechartClient.scale, ToggleablepiechartClient.scale);
-
-            _chart.render(_context);
-            _context.drawText(textRenderer, Text.of(">"), _width - (228), _height - (_count*9 - 4) + 9*(index-2), 0xFFFFFFFF, true);
-            
-            _stack.pop();
-        }
+    private static boolean isConfig() {
+        var client = MinecraftClient.getInstance();
+        return client.currentScreen instanceof ConfigurePieChart;
     }
 
-    public static void move(int _step) {
-        if(!ToggleablepiechartClient.piechartToggled) return;
+    public void render(DrawContext context, RenderTickCounter tickCounter, boolean fromScreen) {
+        var client = MinecraftClient.getInstance();
+        var isInConfig = isConfig();
 
-        if(index + _step <= 0 || index + _step > getPathCount()-1) {
+        if(isInConfig && !fromScreen) {
             return;
         }
 
-        index += _step;
+        if(!isInConfig && !PieChartClient.transform.isToggled()) {
+            return;
+        }
+
+        var pieChart = getPieChart();
+        var lineCount = getPathCount();
+
+        var screenWidth = client.getWindow().getScaledWidth();
+        var screenHeight = client.getWindow().getScaledHeight();
+
+        var posX = (int)Math.round(PieChartClient.transform.getPosX());
+        var posY = (int)Math.round(PieChartClient.transform.getPosY());
+
+        var scale = (float)PieChartClient.transform.getScale();
+
+        // scale pie chart
+        var matrix = context.getMatrices();
+        matrix.push();
+
+        matrix.translate(posX, posY, 0);
+        matrix.scale(scale, scale, 1.0f);
+
+        var chartX = -(screenWidth - PieChartClient.transform.getWidth()) + xOffset;
+        var chartY = -(screenHeight - PieChartClient.transform.getHeight(lineCount));
+
+        matrix.translate(chartX, chartY + yOffset, 0.0);
+        pieChart.render(context);
+
+        matrix.pop();
+        matrix.push();
+
+        matrix.translate(posX, posY, 0);
+        matrix.scale(scale, scale, 1.0f);
+
+        var caretY = PieChartClient.transform.getRawHeight() - caretStart + (index * PieChartClient.transform.heightPerEntry);
+        context.drawTexture(RenderLayer::getGuiTextured, cursorTexture, 0, caretY + 1, 0, 0, 7, 7, 7, 7, 0xFFFFFFFF);
+
+        matrix.pop();
+    }
+
+    public static boolean isChartShown() {
+        return isConfig() || PieChartClient.transform.isToggled();
+    }
+
+    public static void move(int step) {
+        if(!PieChartClient.transform.isToggled()) {
+            return;
+        }
+
+        var newStep = index + step;
+
+        if(newStep < 0 || newStep >= getPathCount()-1) {
+            return;
+        }
+
+        index = newStep;
     }
 
     public static void select() {
-        if(!ToggleablepiechartClient.piechartToggled) return;
+        if(!PieChartClient.transform.isToggled())  {
+            return;
+        }
 
-        MinecraftClient client = MinecraftClient.getInstance();
-        PieChart _chart = ((PieChartAccessor)client.getDebugHud()).getPieChart();
+        var pieChart = getPieChart();
 
-        // store where we currently are in the chart
-        pathIndexRememberence.put(((PieChartCountAccessor)_chart).getCurrentPath(), index);
-        
         isMoving = true;
-        _chart.select(index);
+        pieChart.select(index+1);
         isMoving = false;
 
-        index = 1;
+        // store where we currently are in the chart
+        pathIndexRemembrance.put(getCurrentPath(), index);
+
+        index = 0;
     }
 
     public static void back() {
-        if(!ToggleablepiechartClient.piechartToggled) return;
+        if(!PieChartClient.transform.isToggled()) {
+            return;
+        }
 
-        MinecraftClient client = MinecraftClient.getInstance();
-        PieChart _chart = ((PieChartAccessor)client.getDebugHud()).getPieChart();
+        var pieChart = getPieChart();
+        var currentPath = getCurrentPath();
 
-        // even though you can't go back on root, it will mess with the path rememberence code
-        if(((PieChartCountAccessor)_chart).getCurrentPath().equals("root")) {
+        // even though you can't go back on root, it will mess with the path remembrance code
+        if(currentPath.equals("root")) {
             return;
         }
 
         isMoving = true;
-        _chart.select(0);
+        pieChart.select(0);
         isMoving = false;
 
-        String _path = ((PieChartCountAccessor)_chart).getCurrentPath();
-        if(pathIndexRememberence.containsKey(_path)) {
-            // return to where we were
-            index = pathIndexRememberence.get(_path);
-        }
-        else {
-            index = 1;
-        }
+        // return to where we were
+        index = pathIndexRemembrance.getOrDefault(currentPath, 0);
     }
 
     public static int getPathCount() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        PieChartCountAccessor _chart = (PieChartCountAccessor)((PieChartAccessor)client.getDebugHud()).getPieChart();
+        var pieChart = getCountAccessor();
 
-        if(_chart.getProfileResult() == null || _chart.getCurrentPath() == null) {
+        if(pieChart.getProfileResult() == null || getCurrentPath().isEmpty()) {
             return 0;
         }
 
-        return _chart.getProfileResult().getTimings(_chart.getCurrentPath()).size();
+        return pieChart.getProfileResult().getTimings(pieChart.getCurrentPath()).size();
+    }
+
+    public static String getCurrentPath() {
+        var path = getCountAccessor().getCurrentPath();
+        return (path == null) ? "" : path;
+    }
+
+    public static net.minecraft.client.gui.hud.debug.PieChart getPieChart() {
+        var client = MinecraftClient.getInstance();
+        return ((PieChartAccessor)client.getDebugHud()).getPieChart();
+    }
+
+    public static PieChartCountAccessor getCountAccessor() {
+        return (PieChartCountAccessor)getPieChart();
     }
 
     public static boolean isMoving() {

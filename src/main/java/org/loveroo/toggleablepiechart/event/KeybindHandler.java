@@ -1,6 +1,6 @@
 package org.loveroo.toggleablepiechart.event;
 
-import org.loveroo.toggleablepiechart.ToggleablepiechartClient;
+import org.loveroo.toggleablepiechart.client.PieChartClient;
 import org.loveroo.toggleablepiechart.screen.ConfigurePieChart;
 import org.lwjgl.glfw.GLFW;
 
@@ -40,9 +40,9 @@ public class KeybindHandler {
         configure = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.piechart.config", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_O, category));
 
-        ClientTickEvents.END_CLIENT_TICK.register((_client) -> {
+        ClientTickEvents.END_CLIENT_TICK.register((client) -> {
             if(toggleChartBind.wasPressed()) {
-                ToggleablepiechartClient.piechartToggled = !ToggleablepiechartClient.piechartToggled;
+                PieChartClient.transform.setToggled(!PieChartClient.transform.isToggled());
             }
 
             while(moveUp.wasPressed()) {
@@ -60,7 +60,7 @@ public class KeybindHandler {
             }
 
             if(configure.wasPressed()) {
-                _client.setScreen(new ConfigurePieChart(pieChartRenderer));
+                client.setScreen(new ConfigurePieChart(pieChartRenderer));
             }
         });
     }
