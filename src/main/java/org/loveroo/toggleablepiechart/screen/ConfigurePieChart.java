@@ -10,6 +10,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 
+import java.util.List;
+
 public class ConfigurePieChart extends Screen {
 
     private DrawPieChart pieChartRenderer;
@@ -81,7 +83,7 @@ public class ConfigurePieChart extends Screen {
 		pieChartRenderer.drawChart(context, RenderTickCounter.ZERO, true);
 
         if(PieChartClient.transform.isPointInside(mouseX, mouseY, lineCount)) {
-            context.drawTooltip(MutableText.of(new PlainTextContent.Literal("Left click to move\nRight click to scale")), mouseX, mouseY);
+            context.drawTooltip(client.textRenderer, List.of(Text.of("Left click to move"), Text.of("Right click to scale")), mouseX, mouseY);
         }
 	}
 
