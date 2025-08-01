@@ -1,14 +1,18 @@
 {
-	"required": true,
-	"package": "org.loveroo.toggleablepiechart.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"ShowPiechartMixin",
-		"PieChartAccessor",
-		"PieChartCountAccessor",
-		"PieChartDisableSelectMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	}
+  "required": true,
+  "package": "org.loveroo.toggleablepiechart.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "PieChartAccessor",
+    "PieChartCountAccessor",
+    "PieChartDisableSelectMixin",
+    "ShowPiechartMixin",
+    "PieChartScaleMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "PieChartTranslateMixin"
+  ]
 }

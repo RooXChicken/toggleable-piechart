@@ -1,5 +1,7 @@
 package org.loveroo.toggleablepiechart.screen;
 
+import net.minecraft.text.MutableText;
+import net.minecraft.text.PlainTextContent;
 import org.loveroo.toggleablepiechart.client.PieChartClient;
 import org.loveroo.toggleablepiechart.event.DrawPieChart;
 
@@ -76,13 +78,10 @@ public class ConfigurePieChart extends Screen {
         var lineCount = DrawPieChart.getPathCount();
 
         PieChartClient.transform.drawOutline(context, lineCount);
-		pieChartRenderer.render(context, RenderTickCounter.ZERO, true);
+		pieChartRenderer.drawChart(context, RenderTickCounter.ZERO, true);
 
         if(PieChartClient.transform.isPointInside(mouseX, mouseY, lineCount)) {
-            setTooltip(Text.of("Left click to move\nRight click to scale"));
-        }
-        else {
-            setTooltip(Text.of(""));
+            context.drawTooltip(MutableText.of(new PlainTextContent.Literal("Left click to move\nRight click to scale")), mouseX, mouseY);
         }
 	}
 

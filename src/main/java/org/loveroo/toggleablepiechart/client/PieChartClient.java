@@ -1,5 +1,8 @@
 package org.loveroo.toggleablepiechart.client;
 
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.minecraft.util.Identifier;
 import org.json.JSONObject;
 import org.loveroo.toggleablepiechart.PieChart;
 import org.loveroo.toggleablepiechart.data.PieChartTransform;
@@ -7,7 +10,6 @@ import org.loveroo.toggleablepiechart.event.DrawPieChart;
 import org.loveroo.toggleablepiechart.event.KeybindHandler;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 
 import java.io.File;
 import java.io.FileReader;
@@ -26,7 +28,7 @@ public class PieChartClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		pieChartRenderer = new DrawPieChart();
-		HudLayerRegistrationCallback.EVENT.register(pieChartRenderer);
+		HudElementRegistry.attachElementAfter(VanillaHudElements.DEBUG, Identifier.of(PieChart.MOD_ID, "pie_chart"), pieChartRenderer);
 		
 		keybindHandler = new KeybindHandler(pieChartRenderer);
 

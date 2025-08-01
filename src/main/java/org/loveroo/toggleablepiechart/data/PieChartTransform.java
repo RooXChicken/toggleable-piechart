@@ -106,7 +106,7 @@ public class PieChartTransform {
     }
 
     public void setScale(double scale) {
-        this.scale = scale;
+        this.scale = Math.max(0.1, scale);
     }
 
     public int getWidth() {

@@ -2,6 +2,8 @@ package org.loveroo.toggleablepiechart.event;
 
 import java.util.HashMap;
 
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.render.RenderLayer;
 import org.loveroo.toggleablepiechart.PieChart;
 import org.loveroo.toggleablepiechart.client.PieChartClient;
@@ -9,15 +11,12 @@ import org.loveroo.toggleablepiechart.mixin.PieChartAccessor;
 import org.loveroo.toggleablepiechart.mixin.PieChartCountAccessor;
 import org.loveroo.toggleablepiechart.screen.ConfigurePieChart;
 
-import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
-import net.fabricmc.fabric.api.client.rendering.v1.LayeredDrawerWrapper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.util.Identifier;
 
-public class DrawPieChart implements HudLayerRegistrationCallback {
+public class DrawPieChart implements HudElement {
 
     private static final Identifier cursorTexture = Identifier.of(PieChart.MOD_ID, "textures/gui/cursor.png");
 
@@ -31,21 +30,18 @@ public class DrawPieChart implements HudLayerRegistrationCallback {
     private final int yOffset = 0;
     private final int caretStart = 6;
 
-    @Override
-    public void register(LayeredDrawerWrapper layeredDrawer) {
-        layeredDrawer.attachLayerAfter(IdentifiedLayer.MISC_OVERLAYS, Identifier.of(PieChart.MOD_ID, "draw_piechart"),
-            (context, tickCounter) -> {
-                render(context, tickCounter, false);
-            }
-        );
-    }
-
     private static boolean isConfig() {
         var client = MinecraftClient.getInstance();
         return client.currentScreen instanceof ConfigurePieChart;
     }
 
-    public void render(DrawContext context, RenderTickCounter tickCounter, boolean fromScreen) {
+    @Override
+    public void render(DrawContext context, RenderTickCounter tickCounter) {
+        drawChart(context, tickCounter, false);
+    }
+
+
+    public void drawChart(DrawContext context, RenderTickCounter tickCounter, boolean fromScreen) {
         var client = MinecraftClient.getInstance();
         var isInConfig = isConfig();
 
@@ -70,27 +66,27 @@ public class DrawPieChart implements HudLayerRegistrationCallback {
 
         // scale pie chart
         var matrix = context.getMatrices();
-        matrix.push();
+        matrix.pushMatrix();
 
-        matrix.translate(posX, posY, 0);
-        matrix.scale(scale, scale, 1.0f);
+        matrix.translate(posX, posY);
+        matrix.scale(scale, scale);
 
         var chartX = -(screenWidth - PieChartClient.transform.getWidth()) + xOffset;
         var chartY = -(screenHeight - PieChartClient.transform.getHeight(lineCount));
 
-        matrix.translate(chartX, chartY + yOffset, 0.0);
+        matrix.translate(chartX, chartY + yOffset);
         pieChart.render(context);
 
-        matrix.pop();
-        matrix.push();
+        matrix.popMatrix();
+        matrix.pushMatrix();
 
-        matrix.translate(posX, posY, 0);
-        matrix.scale(scale, scale, 1.0f);
+        matrix.translate(posX, posY);
+        matrix.scale(scale, scale);
 
         var caretY = PieChartClient.transform.getRawHeight() - caretStart + (index * PieChartClient.transform.heightPerEntry);
-        context.drawTexture(RenderLayer::getGuiTextured, cursorTexture, 0, caretY + 1, 0, 0, 7, 7, 7, 7, 0xFFFFFFFF);
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, cursorTexture, 0, caretY + 1, 0, 0, 7, 7, 7, 7, 0xFFFFFFFF);
 
-        matrix.pop();
+        matrix.popMatrix();
     }
 
     public static boolean isChartShown() {
