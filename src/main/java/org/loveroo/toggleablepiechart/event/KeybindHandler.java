@@ -43,6 +43,7 @@ public class KeybindHandler {
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {
             if(toggleChartBind.wasPressed()) {
                 PieChartClient.transform.setToggled(!PieChartClient.transform.isToggled());
+                PieChartClient.saveConfig();
             }
 
             while(moveUp.wasPressed()) {
