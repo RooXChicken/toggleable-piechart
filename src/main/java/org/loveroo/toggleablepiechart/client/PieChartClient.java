@@ -28,7 +28,7 @@ public class PieChartClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		pieChartRenderer = new DrawPieChart();
-		HudElementRegistry.attachElementAfter(VanillaHudElements.DEBUG, Identifier.of(PieChart.MOD_ID, "pie_chart"), pieChartRenderer);
+		HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of(PieChart.MOD_ID, "pie_chart"), pieChartRenderer);
 		
 		keybindHandler = new KeybindHandler(pieChartRenderer);
 

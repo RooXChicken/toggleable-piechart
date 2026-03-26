@@ -1,6 +1,6 @@
 package org.loveroo.toggleablepiechart.mixin;
 
-import net.minecraft.client.gui.hud.debug.PieChart;
+import net.minecraft.client.gui.hud.debug.chart.PieChart;
 import org.loveroo.toggleablepiechart.client.PieChartClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

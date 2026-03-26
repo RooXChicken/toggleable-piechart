@@ -1,9 +1,9 @@
 package org.loveroo.toggleablepiechart.mixin;
 
+import net.minecraft.client.gui.hud.debug.chart.PieChart;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-import net.minecraft.client.gui.hud.debug.PieChart;
 import net.minecraft.util.profiler.ProfileResult;
 
 @Mixin(PieChart.class)

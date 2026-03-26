@@ -1,5 +1,6 @@
 package org.loveroo.toggleablepiechart.event;
 
+import net.minecraft.util.Identifier;
 import org.loveroo.toggleablepiechart.client.PieChartClient;
 import org.loveroo.toggleablepiechart.screen.ConfigurePieChart;
 import org.lwjgl.glfw.GLFW;
@@ -12,7 +13,7 @@ import net.minecraft.client.util.InputUtil;
 public class KeybindHandler {
     private DrawPieChart pieChartRenderer;
 
-    private static final String category = "key.category.piechart";
+    private static final KeyBinding.Category category = new KeyBinding.Category(Identifier.of("key.category.piechart"));
     private static KeyBinding toggleChartBind;
 
     private static KeyBinding moveUp;

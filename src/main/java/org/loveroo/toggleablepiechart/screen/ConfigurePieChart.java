@@ -1,5 +1,6 @@
 package org.loveroo.toggleablepiechart.screen;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.PlainTextContent;
 import org.loveroo.toggleablepiechart.client.PieChartClient;
@@ -10,13 +11,14 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 
+import java.awt.*;
 import java.util.List;
 
 public class ConfigurePieChart extends Screen {
 
     private DrawPieChart pieChartRenderer;
 
-    private int mouseState = 0;
+    private int mouseState = -1;
     private boolean isSelected = false;
 
     private int mouseX = 0;
@@ -32,21 +34,21 @@ public class ConfigurePieChart extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        mouseState = button;
+    public boolean mouseClicked(Click click, boolean doubled) {
+        mouseState = click.button();
         handleClick();
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(click, doubled);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(Click click) {
         mouseState = -1;
         handleClick();
 
         PieChartClient.saveConfig();
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(click);
     }
 
     protected void handleClick() {

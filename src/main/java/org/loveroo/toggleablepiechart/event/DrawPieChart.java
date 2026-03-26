@@ -28,7 +28,7 @@ public class DrawPieChart implements HudElement {
 
     private final int xOffset = 5;
     private final int yOffset = 0;
-    private final int caretStart = 6;
+    private final int caretStart = 5;
 
     private static boolean isConfig() {
         var client = MinecraftClient.getInstance();
@@ -74,19 +74,22 @@ public class DrawPieChart implements HudElement {
         var chartX = -(screenWidth - PieChartClient.transform.getWidth()) + xOffset;
         var chartY = -(screenHeight - PieChartClient.transform.getHeight(lineCount));
 
-        matrix.translate(chartX, chartY + yOffset);
+        matrix.pushMatrix();
+        matrix.translate(chartX, chartY);
+
         pieChart.render(context);
 
         matrix.popMatrix();
-        matrix.pushMatrix();
+//        matrix.pushMatrix();
 
-        matrix.translate(posX, posY);
-        matrix.scale(scale, scale);
+//        matrix.translate(posX, posY);
+//        matrix.scale(scale, scale);
 
-        var caretY = PieChartClient.transform.getRawHeight() - caretStart + (index * PieChartClient.transform.heightPerEntry);
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, cursorTexture, 0, caretY + 1, 0, 0, 7, 7, 7, 7, 0xFFFFFFFF);
+        var caretY = PieChartClient.transform.getRawHeight() + (index * PieChartClient.transform.heightPerEntry) - 5;
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, cursorTexture, 0, caretY, 0, 0, 7, 7, 7, 7, 0xFFFFFFFF);
 
         matrix.popMatrix();
+//        matrix.popMatrix();
     }
 
     public static boolean isChartShown() {
@@ -160,7 +163,7 @@ public class DrawPieChart implements HudElement {
         return (path == null) ? "" : path;
     }
 
-    public static net.minecraft.client.gui.hud.debug.PieChart getPieChart() {
+    public static net.minecraft.client.gui.hud.debug.chart.PieChart getPieChart() {
         var client = MinecraftClient.getInstance();
         return ((PieChartAccessor)client.getDebugHud()).getPieChart();
     }
